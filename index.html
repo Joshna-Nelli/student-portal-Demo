@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 1rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 0.75rem 0;
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .correct {
+      background-color: #d4edda;
+    }
+    .incorrect {
+      background-color: #f8d7da;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container" id="quiz">
+    <h2 id="question">Question text</h2>
+    <ul id="answer-list">
+      <!-- Options will be inserted here -->
+    </ul>
+    <button id="next-btn">Next</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Which language runs in a web browser?",
+        options: ["Java", "C", "Python", "JavaScript"],
+        correct: 3
+      },
+      {
+        question: "What does CSS stand for?",
+        options: ["Central Style Sheets", "Cascading Style Sheets", "Computer Style Sheets", "Colorful Style Sheets"],
+        correct: 1
+      },
+      {
+        question: "What year was JavaScript created?",
+        options: ["1996", "1995", "1994", "1993"],
+        correct: 1
+      }
+    ];
+
+    const questionEl = document.getElementById('question');
+    const answerList = document.getElementById('answer-list');
+    const nextBtn = document.getElementById('next-btn');
+    const quizContainer = document.getElementById('quiz');
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      answered = false;
+      const current = quizData[currentQuestion];
+      questionEl.textContent = current.question;
+      answerList.innerHTML = '';
+
+      current.options.forEach((option, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button onclick="selectAnswer(${index})">${option}</button>`;
+        answerList.appendChild(li);
+      });
+
+      nextBtn.style.display = 'none';
+    }
+
+    function selectAnswer(selected) {
+      if (answered) return;
+      answered = true;
+
+      const correctIndex = quizData[currentQuestion].correct;
+      const buttons = answerList.querySelectorAll('button');
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === correctIndex) {
+          btn.classList.add('correct');
+        } else if (idx === selected) {
+          btn.classList.add('incorrect');
+        }
+      });
+
+      if (selected === correctIndex) {
+        score++;
+      }
+
+      nextBtn.style.display = 'inline-block';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      quizContainer.innerHTML = `
+        <h2>You scored ${score} out of ${quizData.length}!</h2>
+        <button onclick="location.reload()">Restart Quiz</button>
+      `;
+    }
+
+    // Start the quiz
+    loadQuestion();
+  </script>
+
+</body>
+</html>
